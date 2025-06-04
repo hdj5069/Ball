@@ -67,10 +67,10 @@ public class UIManager : MonoBehaviour
 
         // 초기 UI 상태
         HideAllScreens(); // 일단 다 숨기고 시작
-        if (GameManager.Instance.CurrentState == GameState.MainMenu)
+        if (DIContainer.Resolve<GameManager>().CurrentState == GameState.MainMenu)
         {
             ShowMainMenu();
-        } else if(GameManager.Instance.CurrentState == GameState.Playing)
+        } else if(DIContainer.Resolve<GameManager>().CurrentState == GameState.Playing)
         {
             ShowGameUI();
         }
@@ -161,7 +161,7 @@ public class UIManager : MonoBehaviour
     {
         if (index < currentUpgradeChoices.Count)
         {
-            GameManager.Instance.SelectUpgrade(currentUpgradeChoices[index]);
+            DIContainer.Resolve<GameManager>().SelectUpgrade(currentUpgradeChoices[index]);
             HideAllScreens(); // 선택 후 업그레이드 화면 숨김
             ShowGameUI();
         }
@@ -221,12 +221,12 @@ public class UIManager : MonoBehaviour
     // --- Button Click Handlers ---
     void OnRetryButtonClicked()
     {
-        GameManager.Instance.StartNewGame(); // 새 게임 시작
+        DIContainer.Resolve<GameManager>().StartNewGame(); // 새 게임 시작
     }
 
     void OnMainMenuButtonClicked()
     {
-        GameManager.Instance.ChangeState(GameState.MainMenu);
+        DIContainer.Resolve<GameManager>().ChangeState(GameState.MainMenu);
         // 만약 GameManager가 DontDestroyOnLoad라면 씬을 로드해야함
         // SceneManager.LoadScene("MainMenuScene"); // 또는 GameManager가 직접 처리
     }
@@ -236,22 +236,22 @@ public class UIManager : MonoBehaviour
         // GameManager가 DontDestroyOnLoad이고 현재 씬이 GameScene이 아니라면 GameScene 로드
         if(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name != "GameScene")
         {
-            GameManager.Instance.LoadGameScene();
+            DIContainer.Resolve<GameManager>().LoadGameScene();
         }
         else // 이미 GameScene이라면
         {
-            GameManager.Instance.StartNewGame();
+            DIContainer.Resolve<GameManager>().StartNewGame();
         }
     }
 
     void OnQuitButtonClicked()
     {
-        GameManager.Instance.QuitGame();
+        DIContainer.Resolve<GameManager>().QuitGame();
     }
 
     void OnResumeButtonClicked()
     {
-        GameManager.Instance.ChangeState(GameState.Playing); // 일시정지 해제
+        DIContainer.Resolve<GameManager>().ChangeState(GameState.Playing); // 일시정지 해제
     }
 
     // public void UpdateNextBrickPreview(List<BrickType> nextBricks) { /* ... */ }

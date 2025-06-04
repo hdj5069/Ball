@@ -25,13 +25,13 @@ public class PlayerLauncher : MonoBehaviour
             aimLineRenderer.enabled = false;
         }
         // 초기 발사 가능 공 개수는 PlayerStats 또는 GameManager에서 관리
-        ballsToLaunchThisTurn = GameManager.Instance.playerStats.GetInitialBallsPerTurn();
+        ballsToLaunchThisTurn = DIContainer.Resolve<GameManager>().playerStats.GetInitialBallsPerTurn();
     }
 
     void Update()
     {
-        if (GameManager.Instance.CurrentState != GameState.Playing) return;
-        if (GameManager.Instance.AreAllBallsIdleOrDestroyed() == false) return; // 모든 공이 멈추거나 파괴된 후에만 조작 가능
+        if (DIContainer.Resolve<GameManager>().CurrentState != GameState.Playing) return;
+        if (DIContainer.Resolve<GameManager>().AreAllBallsIdleOrDestroyed() == false) return; // 모든 공이 멈추거나 파괴된 후에만 조작 가능
 
         HandleInput();
     }
@@ -66,7 +66,7 @@ public class PlayerLauncher : MonoBehaviour
             // if (Mathf.Abs(direction.y) < 0.1f) direction.y = Mathf.Sign(direction.y) * 0.1f;
 
             LaunchBalls(direction);
-            GameManager.Instance.OnPlayerAction(); // 플레이어가 행동했음을 알림 (턴 진행 등)
+            DIContainer.Resolve<GameManager>().OnPlayerAction(); // 플레이어가 행동했음을 알림 (턴 진행 등)
         }
     }
 
@@ -123,8 +123,8 @@ public class PlayerLauncher : MonoBehaviour
                 if (ball != null)
                 {
                     // PlayerStats에서 공의 현재 스탯 가져오기
-                    int ballHp = GameManager.Instance.playerStats.GetCurrentBallHp();
-                    int ballDamage = GameManager.Instance.playerStats.GetCurrentBallDamage();
+                    int ballHp = DIContainer.Resolve<GameManager>().playerStats.GetCurrentBallHp();
+                    int ballDamage = DIContainer.Resolve<GameManager>().playerStats.GetCurrentBallDamage();
                     ball.Initialize(ballHp, ballDamage);
                     // ball.moveSpeed = launchForce; // BallController의 moveSpeed를 사용하도록 통일하는 것이 좋음
 
@@ -136,7 +136,7 @@ public class PlayerLauncher : MonoBehaviour
                         launchDir = Quaternion.Euler(0, 0, angleOffset) * direction;
                     }
                     ball.Launch(launchDir.normalized);
-                    GameManager.Instance.RegisterActiveBall(ball);
+                    DIContainer.Resolve<GameManager>().RegisterActiveBall(ball);
                 }
             }
         }

@@ -70,12 +70,12 @@ public class PlayerStats
             case UpgradeEffect.IncreaseMaxActiveBalls: // 영구적으로 필드에 공 추가 (해당 런 한정)
                 CurrentMaxActiveBalls += (int)value;
                 BallsToLaunchNext = CurrentMaxActiveBalls; // 다음 발사 시 적용되도록
-                // PlayerLauncher에도 알려야 함. GameManager를 통하거나 직접 참조.
-                GameManager.Instance.playerLauncher.SetBallsToLaunch(BallsToLaunchNext);
+                // PlayerLauncher에도 알려야 함. DIContainer를 통해 참조를 얻음.
+                DIContainer.Resolve<PlayerLauncher>().SetBallsToLaunch(BallsToLaunchNext);
                 break;
             case UpgradeEffect.AddBallsNextLaunch: // 일회성으로 다음 발사에 공 추가
                 BallsToLaunchNext += (int)value;
-                 GameManager.Instance.playerLauncher.SetBallsToLaunch(BallsToLaunchNext);
+                DIContainer.Resolve<PlayerLauncher>().SetBallsToLaunch(BallsToLaunchNext);
                 break;
             case UpgradeEffect.XPGainUp:
                 XPGainModifier += value; // value는 퍼센트이므로 0.1f (10%) 등으로 전달
@@ -88,7 +88,7 @@ public class PlayerStats
                 BallSplitChance = value; // value는 확률 (0.0 ~ 1.0)
                 // BallController에 이 정보를 전달해야 함. GameManager를 통해 모든 활성 공에게 전달하거나,
                 // 공 생성 시 PlayerStats를 참조하도록.
-                GameManager.Instance.UpdateActiveBallsSplitAbility(HasBallSplit, BallSplitChance);
+                DIContainer.Resolve<GameManager>().UpdateActiveBallsSplitAbility(HasBallSplit, BallSplitChance);
                 break;
             // ... 기타 업그레이드
         }

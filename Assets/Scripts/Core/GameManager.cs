@@ -36,6 +36,10 @@ public class GameManager : MonoBehaviour
             Instance = this;
             DontDestroyOnLoad(gameObject); // GameManager는 씬 전환 시 유지 (선택적)
             InitializeGameManagers();
+            if (GetComponent<Bootstrap>() == null)
+            {
+                gameObject.AddComponent<Bootstrap>();
+            }
         }
         else
         {

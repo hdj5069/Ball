@@ -59,15 +59,15 @@ public class Brick : MonoBehaviour
     {
         // TODO: 파괴 이펙트/사운드 재생
         // GameManager에 알림
-        GameManager.Instance.AddXP(xpValue);
+        DIContainer.Resolve<GameManager>().AddXP(xpValue);
         if (brickType == BrickType.Coin || goldValue > 0) // 코인 벽돌 또는 일반 벽돌도 골드 지급 가능
         {
-            GameManager.Instance.AddGold(goldValue);
+            DIContainer.Resolve<GameManager>().AddGold(goldValue);
         }
 
         HandleSpecialEffectOnDeath();
 
-        GameManager.Instance.OnBrickDestroyed(this);
+        DIContainer.Resolve<GameManager>().OnBrickDestroyed(this);
         gameObject.SetActive(false); // 오브젝트 풀링
     }
 
@@ -79,13 +79,13 @@ public class Brick : MonoBehaviour
                 Explode();
                 break;
             case BrickType.Heal:
-                GameManager.Instance.HealAllActiveBalls(healAmount);
+                DIContainer.Resolve<GameManager>().HealAllActiveBalls(healAmount);
                 break;
             case BrickType.Buff_Damage:
-                GameManager.Instance.ApplyGlobalBallBuff(BallBuffType.Damage, buffValue, buffDuration);
+                DIContainer.Resolve<GameManager>().ApplyGlobalBallBuff(BallBuffType.Damage, buffValue, buffDuration);
                 break;
             case BrickType.Buff_Speed:
-                GameManager.Instance.ApplyGlobalBallBuff(BallBuffType.Speed, (int)buffValue, buffDuration); // 속도는 float이지만 편의상 int로
+                DIContainer.Resolve<GameManager>().ApplyGlobalBallBuff(BallBuffType.Speed, (int)buffValue, buffDuration); // 속도는 float이지만 편의상 int로
                 break;
             case BrickType.XPBoost:
                 // XP는 이미 AddXP에서 처리됨 (xpValue를 높게 설정)
