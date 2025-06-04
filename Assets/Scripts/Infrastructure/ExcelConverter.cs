@@ -2,34 +2,59 @@
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using System.Linq;
+using ClosedXML.Excel;
 
 public static class ExcelConverter
 {
-    // Very simple CSV to list converter. In a real project you would use a
-    // package like ExcelDataReader but that requires external dependencies.
-    public static List<Dictionary<string, string>> ConvertCsv(string csvPath)
+    // Converts an Excel worksheet to a list of dictionaries using ClosedXML.
+    // Each dictionary represents a row with keys from the header row.
+    public static List<Dictionary<string, string>> ConvertExcel(string excelPath, string sheetName = null)
     {
         var result = new List<Dictionary<string, string>>();
-        if (!File.Exists(csvPath))
+
+        if (!File.Exists(excelPath))
         {
-            Debug.LogError($"CSV file not found at {csvPath}");
+            Debug.LogError($"Excel file not found at {excelPath}");
             return result;
         }
 
-        var lines = File.ReadAllLines(csvPath);
-        if (lines.Length == 0) return result;
-
-        var headers = lines[0].Split(',');
-        for (int i = 1; i < lines.Length; i++)
+        try
         {
-            var row = lines[i].Split(',');
-            var entry = new Dictionary<string, string>();
-            for (int j = 0; j < headers.Length && j < row.Length; j++)
+            using (var workbook = new XLWorkbook(excelPath))
             {
-                entry[headers[j]] = row[j];
+                var worksheet = string.IsNullOrEmpty(sheetName)
+                    ? workbook.Worksheet(1)
+                    : workbook.Worksheet(sheetName);
+
+                var firstRowUsed = worksheet.FirstRowUsed();
+                if (firstRowUsed == null) return result;
+
+                var headers = new List<string>();
+                foreach (var cell in firstRowUsed.Cells())
+                {
+                    headers.Add(cell.GetString());
+                }
+
+                foreach (var row in worksheet.RowsUsed().Skip(1))
+                {
+                    var entry = new Dictionary<string, string>();
+                    int colIndex = 0;
+                    foreach (var cell in row.Cells(1, headers.Count))
+                    {
+                        if (colIndex < headers.Count)
+                            entry[headers[colIndex]] = cell.GetString();
+                        colIndex++;
+                    }
+                    result.Add(entry);
+                }
             }
-            result.Add(entry);
         }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"Failed to convert Excel: {ex.Message}");
+        }
+
         return result;
     }
 }
